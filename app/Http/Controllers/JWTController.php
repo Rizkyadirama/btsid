@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\User;
+use JWTAuth;
 use Illuminate\Support\Facades\Hash;
 
 class JWTController extends Controller
 {
+    protected $user;
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register','allUser']]);
     }
 
     public function register(Request $request)
@@ -68,5 +70,10 @@ class JWTController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function allUser(){
+        $this->user = JWTAuth::parseToken()->authenticate();
+        return User::all();
     }
 }

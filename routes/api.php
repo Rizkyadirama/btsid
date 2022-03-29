@@ -21,7 +21,12 @@ use App\Http\Controllers\shoppingController;
 // });
 
 Route::group(['middleware' => 'api'], function($router) {
-    Route::post('/register', [JWTController::class, 'register']);
-    Route::post('/login', [JWTController::class, 'login']);
+    Route::post('/signup', [JWTController::class, 'register']);
+    Route::post('/signin', [JWTController::class, 'login']);
+    Route::get('/users', [JWTController::class, 'allUser']);
     Route::get('/shopping', [shoppingController::class, 'index']);
+    Route::post('/shopping/add', [shoppingController::class, 'store']);
+    Route::get('/shopping/{id}', [shoppingController::class, 'show']);
+    Route::put('/shopping/{id}', [shoppingController::class, 'update']);
+    Route::delete('/shopping/{id}', [shoppingController::class, 'delete']);
 });

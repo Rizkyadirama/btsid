@@ -22,9 +22,9 @@ class shoppingController extends Controller
     }
     public function show($id)
     {
-        $product = $this->user->products()->find($id);
+        $product = shoppingModel::where('id', $id)->get();
     
-        if (!$product) {
+        if ($product->count() < 1) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, product with id ' . $id . ' cannot be found'
@@ -36,21 +36,16 @@ class shoppingController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'price' => 'required|integer',
-            'quantity' => 'required|integer'
+        
+        $produk = ShoppingModel::create([
+            'Name'=> $request->name,
         ]);
+
     
-        $product = new Product();
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->quantity = $request->quantity;
-    
-        if ($this->user->products()->save($product))
+        if ($produk)
             return response()->json([
                 'success' => true,
-                'product' => $product
+                'product' => $produk
             ]);
         else
             return response()->json([
@@ -58,5 +53,55 @@ class shoppingController extends Controller
                 'message' => 'Sorry, product could not be added'
             ], 500);
     }
+
+
+    public function update(Request $request, $id){
+        $product = shoppingModel::find($id);
+    
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, product not found'
+            ], 400);
+        }
+        
+        $product->Name  = $request->name;
+        $updated = $product->save();
+    
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'product' => $product
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, product could not be updated'
+            ], 500);
+        }
+    }
+
+    public function delete($id){
+        $product = shoppingModel::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, product not found'
+            ], 400);
+        }
+
+        if ($product->delete()) {
+            return response()->json([
+                'success' => true
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product could not be deleted'
+            ], 500);
+        }
+    }
+    
 
 }
